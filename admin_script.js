@@ -14,30 +14,38 @@ const auth = firebase.auth();
 const database = firebase.database();
 
 // --- Admin Authentication ---
-// IMPORTANT: For a real app, you should create a specific admin user in Firebase Authentication.
-// We will use a simple email/password check here for ease of use.
-const ADMIN_EMAIL = "rushikeshkhode2626@gmail.com"; // Change this to your desired admin email
-const ADMIN_PASSWORD = "Rushi@2601"; // Change this to a strong password
-
-function adminLogin() {
+// This function now uses Firebase to securely log in the admin.
+async function adminLogin() {
     const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
     const errorEl = document.getElementById('admin-error');
+    errorEl.textContent = 'Logging in...';
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    try {
+        // Attempt to sign in using Firebase Authentication
+        await auth.signInWithEmailAndPassword(email, password);
+        
+        // If login is successful, hide the login form and show the admin content
+        console.log("Admin login successful!");
         document.getElementById('admin-login').classList.add('hidden');
         document.getElementById('admin-content').classList.remove('hidden');
         errorEl.textContent = '';
-        initializeApp();
-    } else {
-        errorEl.textContent = "Invalid admin credentials.";
+        initializeApp(); // Load the data for the forms
+
+    } catch (error) {
+        // If login fails, show an error message
+        console.error("Admin Login Error:", error.message);
+        errorEl.textContent = "Login failed. Please check your email and password.";
     }
 }
+
 
 // --- App Initialization ---
 function initializeApp() {
     // Populate class dropdown
     const classSelect = document.getElementById('lesson-class');
+    // Clear existing options before adding new ones
+    classSelect.innerHTML = '<option value="">Select Class</option>';
     for (let i = 1; i <= 10; i++) {
         classSelect.innerHTML += `<option value="${i}th">${i}th</option>`;
     }
@@ -95,7 +103,10 @@ function addQnaPair() {
 }
 
 function removeQnaPair(id) {
-    document.getElementById(`qna-pair-${id}`).remove();
+    const element = document.getElementById(`qna-pair-${id}`);
+    if(element) {
+        element.remove();
+    }
 }
 
 
@@ -113,10 +124,14 @@ function saveLesson(e) {
     const qnaData = [];
     const qnaPairs = document.querySelectorAll('#qna-container > div');
     qnaPairs.forEach(pair => {
-        const question = pair.querySelector('.qna-question').value;
-        const answer = pair.querySelector('.qna-answer').value;
-        if (question && answer) {
-            qnaData.push({ question, answer });
+        const questionInput = pair.querySelector('.qna-question');
+        const answerInput = pair.querySelector('.qna-answer');
+        if (questionInput && answerInput) {
+            const question = questionInput.value;
+            const answer = answerInput.value;
+            if (question && answer) {
+                qnaData.push({ question, answer });
+            }
         }
     });
 
@@ -137,6 +152,7 @@ function saveLesson(e) {
             successMessage.textContent = 'Lesson saved successfully!';
             document.getElementById('lesson-form').reset();
             document.getElementById('qna-container').innerHTML = '<h3 class="text-lg font-semibold mt-4">Questions & Answers</h3>'; // Reset Q&A
+            qnaCount = 0;
             setTimeout(() => successMessage.textContent = '', 3000);
         })
         .catch(error => {
@@ -144,3 +160,4 @@ function saveLesson(e) {
             successMessage.textContent = 'Error saving lesson. Check console for details.';
         });
 }
+
