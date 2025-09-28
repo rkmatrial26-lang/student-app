@@ -16,7 +16,6 @@
             <p class="text-gray-500">Add and edit subjects, lessons, and questions for your students.</p>
         </div>
 
-        <!-- Login Form -->
         <div id="admin-login" class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-center mb-6">Admin Login</h2>
             <input type="email" id="adminEmail" placeholder="Admin Email" class="w-full p-3 mb-4 border rounded-lg">
@@ -25,29 +24,25 @@
             <p id="admin-error" class="text-red-500 text-center mt-4"></p>
         </div>
 
-        <!-- Main Content Area (Hidden by default) -->
         <div id="admin-content" class="hidden">
-            <!-- Lesson Management Form -->
             <div class="bg-white p-8 rounded-lg shadow-lg mb-8">
                 <h2 class="text-2xl font-semibold mb-6 border-b pb-4">
                     <i class="fas fa-book-medical mr-2 text-blue-500"></i>Add or Edit a Lesson (Chapter)
                 </h2>
                 <form id="lesson-form" class="space-y-4">
-                    <!-- Class and Medium Selection -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <select id="lesson-class" class="w-full p-3 border rounded-lg" required>
                             <option value="">Select Class</option>
-                            <!-- Options will be added by JS -->
-                        </select>
+                            </select>
                         <select id="lesson-medium" class="w-full p-3 border rounded-lg" required>
                            <option value="">Select Medium</option>
                            <option value="English">English</option>
                            <option value="Marathi">Marathi</option>
+                           <option value="Semi-English">Semi-English</option>
                         </select>
                         <select id="lesson-subject" class="w-full p-3 border rounded-lg" required>
                             <option value="">Select Subject</option>
-                            <!-- Subject options will load based on class/medium -->
-                        </select>
+                            </select>
                     </div>
 
                     <input type="text" id="lesson-title" placeholder="Lesson/Chapter Title (e.g., Chapter 1: Algebra)" class="w-full p-3 border rounded-lg" required>
@@ -59,11 +54,9 @@
                         <label for="is-paid" class="ml-2 block text-sm text-gray-900">Mark as Premium (Paid Content)</label>
                     </div>
 
-                    <!-- Q&A Section -->
                     <div id="qna-container">
                         <h3 class="text-lg font-semibold mt-4">Questions & Answers</h3>
-                        <!-- Q&A pairs will be added here -->
-                    </div>
+                        </div>
                     <button type="button" onclick="addQnaPair()" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>Add Question
                     </button>
@@ -75,12 +68,10 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
-    <!-- Custom Admin JavaScript -->
     <script src="admin_script.js"></script>
 </body>
 </html>
