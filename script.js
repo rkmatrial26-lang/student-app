@@ -78,6 +78,11 @@ function showAuthPage() {
                     <p class="text-center mt-4 text-sm">Already have an account? <button type="button" class="font-semibold text-blue-600 hover:underline" onclick="toggleAuthView()">Login here</button></p>
                 </form>
                 <p id="auth-error" class="text-red-600 text-sm mt-4 hidden text-center"></p>
+                
+                <!-- THIS IS THE NEW LINK TO THE ADMIN PANEL -->
+                <div class="text-center mt-6 border-t pt-4">
+                    <a href="admin.html" class="text-sm text-gray-500 hover:text-blue-600 hover:underline">Admin Panel Access</a>
+                </div>
             </div>
         </div>`;
     setupEmailAuth();
@@ -370,3 +375,4 @@ function toggleAnswer(element) {
     answer.classList.toggle('hidden');
     icon.classList.toggle('rotate-180');
 }
+
