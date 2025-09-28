@@ -16,8 +16,8 @@ const database = firebase.database();
 // --- Admin Authentication ---
 // IMPORTANT: For a real app, you should create a specific admin user in Firebase Authentication.
 // We will use a simple email/password check here for ease of use.
-const ADMIN_EMAIL = "admin@learnapp.com"; // Change this to your desired admin email
-const ADMIN_PASSWORD = "adminpassword"; // Change this to a strong password
+const ADMIN_EMAIL = "rushikeshkhode2626@gmail.com"; // Change this to your desired admin email
+const ADMIN_PASSWORD = "Rushi@2601"; // Change this to a strong password
 
 function adminLogin() {
     const email = document.getElementById('adminEmail').value;
