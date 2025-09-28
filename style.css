@@ -1,0 +1,30 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+/* Custom scrollbar for content area */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* gray-300 */
+    border-radius: 10px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* gray-400 */
+}
+.gradient-primary {
+    background: linear-gradient(to right, #3B82F6, #2DD4BF);
+}
+.gradient-success {
+    background: linear-gradient(to right, #22C55E, #14B8A6);
+}
+.gradient-danger {
+    background: linear-gradient(to right, #EF4444, #F97316);
+}
+.qna-answer.hidden {
+    display: none;
+}
