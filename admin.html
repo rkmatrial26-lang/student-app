@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-6">Admin Panel</h1>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Manage Lessons</h2>
+            <form id="lesson-form" class="space-y-4">
+                <input type="text" id="lesson-title" placeholder="Lesson Title" class="w-full p-3 border rounded-lg" required>
+                <textarea id="free-content" placeholder="Free Content Preview" class="w-full p-3 border rounded-lg" rows="3"></textarea>
+                <textarea id="full-content" placeholder="Full Lesson Content" class="w-full p-3 border rounded-lg" rows="6"></textarea>
+                <div class="flex items-center">
+                    <input type="checkbox" id="is-paid" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    <label for="is-paid" class="ml-2 block text-sm text-gray-900">Is this a paid lesson?</label>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Upload PDF (optional)</label>
+                    <input type="file" id="pdf-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <button type="submit" class="w-full gradient-primary text-white font-bold py-3 px-4 rounded-lg">Save Lesson</button>
+            </form>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold mb-4">Manage Questions & Answers</h2>
+            </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script>
+        // Your admin-specific JavaScript will go here
+        const firebaseConfig = { /* ...your config... */ };
+        firebase.initializeApp(firebaseConfig);
+
+        // Add code to handle form submissions and save data to Firebase
+    </script>
+</body>
+</html>
