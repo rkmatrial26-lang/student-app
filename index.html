@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Panel - School Learning App</title>
+    <!-- Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-50 text-gray-800 flex justify-center">
 
     <div id="app-container" class="w-full max-w-md min-h-screen flex flex-col bg-white shadow-lg overflow-hidden">
-        </div>
+        <!-- Content will be injected here by JavaScript -->
+    </div>
 
+    <!-- Sidebar (Dashboard) -->
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-30 transform -translate-x-full transition-transform duration-300 ease-in-out">
         <div class="p-6">
             <div class="flex items-center mb-8">
@@ -26,19 +32,19 @@
                 </div>
             </div>
             <nav class="space-y-2">
-                <a href="#" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                <a href="#" onclick="showModal('theme')" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                     <i class="fas fa-palette w-6 text-center"></i><span class="ml-3 font-semibold">Theme</span>
                 </a>
-                <a href="#" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                <a href="#" onclick="showModal('share')" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                     <i class="fas fa-share-alt w-6 text-center"></i><span class="ml-3 font-semibold">App Share</span>
                 </a>
-                <a href="#" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                <a href="#" onclick="showModal('rate')" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                     <i class="fas fa-star w-6 text-center"></i><span class="ml-3 font-semibold">Rate Us</span>
                 </a>
-                <a href="#" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                <a href="#" onclick="showModal('privacy')" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                     <i class="fas fa-shield-alt w-6 text-center"></i><span class="ml-3 font-semibold">Privacy & Policy</span>
                 </a>
-                 <a href="#" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                 <a href="#" onclick="showModal('settings')" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                     <i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">Settings</span>
                 </a>
             </nav>
@@ -46,10 +52,20 @@
     </div>
     <div id="overlay" class="fixed top-0 left-0 w-full h-full bg-black opacity-0 z-20 pointer-events-none transition-opacity duration-300"></div>
 
+    <!-- Modal Container -->
+    <div id="modal-container" class="fixed inset-0 z-50 items-center justify-center hidden">
+        <div id="modal-overlay" class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div id="modal-content" class="bg-white rounded-2xl shadow-xl w-11/12 max-w-sm p-6 relative transform scale-95 transition-transform duration-300">
+            <!-- Modal content goes here -->
+        </div>
+    </div>
 
+
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
