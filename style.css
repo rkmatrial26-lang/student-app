@@ -1,102 +1,92 @@
 :root {
-    --primary-color: #4A90E2; /* A nice, modern blue */
-    --secondary-color: #50E3C2; /* A complementary teal */
-    --text-color: #333;
+    --primary-color: #4A90E2;
+    --secondary-color: #50E3C2;
+    --text-color: #333333;
+    --text-color-secondary: #667;
     --background-color: #F4F7F6;
     --card-bg-color: #FFFFFF;
     --font-family: 'Poppins', sans-serif;
 }
 
+body.dark {
+    --text-color: #E2E8F0;
+    --text-color-secondary: #94A3B8;
+    --background-color: #0F172A;
+    --card-bg-color: #1E293B;
+}
+
 body {
     font-family: var(--font-family);
     background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+#app-container, #sidebar, #modal-content {
+    background-color: var(--card-bg-color);
+    transition: background-color 0.3s ease;
+}
 #app-container {
     background-color: var(--background-color);
 }
 
-/* Custom scrollbar for content area */
-.overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
-}
-.overflow-y-auto::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-.overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #cdd5de;
-    border-radius: 10px;
-}
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #aab8c9;
+
+/* Skeleton Loader */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
 }
 
-/* Gradient Styles */
+.skeleton {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(to right, #e0e0e0 4%, #f0f0f0 25%, #e0e0e0 36%);
+    background-size: 1000px 100%;
+    border-radius: 16px;
+    height: 90px;
+}
+body.dark .skeleton {
+     background: linear-gradient(to right, #334155 4%, #475569 25%, #334155 36%);
+     background-size: 1000px 100%;
+}
+
+
+/* General UI */
 .gradient-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 }
-.gradient-success {
-    background: linear-gradient(135deg, #22C55E, #14B8A6);
-}
-.gradient-danger {
-    background: linear-gradient(135deg, #EF4444, #F97316);
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-
-/* Bottom Navigation */
 .bottom-nav {
+    background-color: var(--card-bg-color);
     box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
+    transition: background-color 0.3s ease;
 }
-
 .nav-item {
     transition: all 0.3s ease;
-    color: #9DB2BF; /* A muted color for inactive icons */
+    color: #9DB2BF;
 }
-
 .nav-item.active {
     color: var(--primary-color);
     transform: translateY(-5px);
 }
-
-/* Sidebar */
-#sidebar.open {
-    transform: translateX(0);
-}
-
-#overlay.active {
-    opacity: 0.5;
-    pointer-events: auto;
-}
+#sidebar.open { transform: translateX(0); }
+#overlay.active { opacity: 0.5; pointer-events: auto; }
 
 /* Subject Cards */
 .subject-card {
     background-color: var(--card-bg-color);
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     align-items: center;
-    border: 1px solid #E2E8F0;
+    border: 1px solid rgba(100,100,100,0.1);
 }
-
 .subject-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 32px rgba(74, 144, 226, 0.2);
 }
-
 .subject-icon {
     width: 50px;
     height: 50px;
@@ -108,20 +98,10 @@ body {
     color: white;
 }
 
-/* Lesson Detail */
-.lesson-content-area {
-    line-height: 1.8;
+/* Modal */
+#modal-container.flex {
+    display: flex;
 }
-
-.prose h1, .prose h2, .prose h3 {
-    font-weight: 700;
-    color: var(--text-color);
-}
-
-.prose p {
-    color: #555;
-}
-
-.qna-answer.hidden {
-    display: none;
+#modal-content.open {
+    transform: scale(1);
 }
