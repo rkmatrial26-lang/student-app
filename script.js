@@ -48,7 +48,7 @@ function toggleSidebar() {
     document.getElementById('overlay').classList.toggle('active');
 }
 
-// --- AUTHENTICATION (No changes from previous version) ---
+// --- AUTHENTICATION (No changes) ---
 function showAuthPage() {
     document.getElementById('app-container').innerHTML = `
         <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-teal-400 p-4">
@@ -116,10 +116,23 @@ async function showPage(page, data = null) {
         case 'lessons':
             const { subjectId, subjectName, subjectColor } = data;
             content.innerHTML = `<div class="flex items-center mb-4"><button onclick="showPage('subjects')" class="text-blue-500 hover:text-blue-700 p-2 mr-2"><i class="fas fa-arrow-left text-xl"></i></button><div class="subject-icon mr-3" style="background-color:${subjectColor||'#3B82F6'};width:40px;height:40px;font-size:20px;"><i class="fas fa-book text-white"></i></div><h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">${subjectName}</h2></div><div id="lessons-list" class="space-y-3"></div>`;
-            fetchLessons(subjectId);
+            fetchLessons(data);
             break;
         case 'lesson':
-             fetchLessonDetail(data.lessonId, data.subjectId);
+             // FIX: Add a loading skeleton immediately
+             content.innerHTML = `
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="h-9 w-9 bg-gray-200 dark:bg-slate-700 rounded-md animate-pulse"></div>
+                        <div class="h-8 w-3/5 bg-gray-200 dark:bg-slate-700 rounded-md ml-4 animate-pulse"></div>
+                    </div>
+                    <div class="flex space-x-2 mb-4">
+                        <div class="h-12 w-1/2 bg-gray-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                        <div class="h-12 w-1/2 bg-gray-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                    </div>
+                    <div class="h-64 bg-gray-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                </div>`;
+             fetchLessonDetail(data);
              break;
         case 'profile':
             content.innerHTML = `<div><h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">My Profile</h2><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg space-y-4"><div class="flex items-center"><i class="fas fa-user w-6 text-gray-500 dark:text-gray-400"></i><p><strong class="font-semibold text-gray-600 dark:text-gray-300">Name:</strong> ${studentData.fullName}</p></div><div class="flex items-center"><i class="fas fa-envelope w-6 text-gray-500 dark:text-gray-400"></i><p><strong class="font-semibold text-gray-600 dark:text-gray-300">Email:</strong> ${studentData.email}</p></div><div class="flex items-center"><i class="fas fa-graduation-cap w-6 text-gray-500 dark:text-gray-400"></i><p><strong class="font-semibold text-gray-600 dark:text-gray-300">Class:</strong> ${studentData.class}</p></div><div class="flex items-center"><i class="fas fa-certificate w-6 text-gray-500 dark:text-gray-400"></i><p><strong class="font-semibold text-gray-600 dark:text-gray-300">Status:</strong> <span class="font-bold py-1 px-3 rounded-full text-sm ${studentData.isPaid ? 'bg-green-100 text-green-600':'bg-orange-100 text-orange-500'}">${studentData.isPaid ? 'Premium User':'Free User'}</span></p></div><button onclick="logout()" class="w-full mt-6 gradient-danger text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">Logout</button></div></div>`;
@@ -138,14 +151,17 @@ function fetchSubjects() {
             const subjects = snapshot.val();
             listEl.innerHTML = Object.keys(subjects).map(id => {
                 const subject = subjects[id];
-                return `<div class="subject-card" onclick="showPage('lessons', { subjectId: '${id}', subjectName: '${subject.name}', subjectColor: '${subject.color}' })"><div class="subject-icon mr-4" style="background-color: ${subject.color || '#3B82F6'}"><i class="fas ${subject.icon || 'fa-book'}"></i></div><div class="flex-grow"><h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">${subject.name}</h3><p class="text-sm text-gray-500 dark:text-gray-400">${subject.chapterCount || '0'} Chapters</p></div><i class="fas fa-chevron-right text-gray-400"></i></div>`;
+                // Use JSON.stringify to safely pass the data object in the onclick handler
+                const subjectData = JSON.stringify({ subjectId: id, subjectName: subject.name, subjectColor: subject.color });
+                return `<div class="subject-card" onclick='showPage("lessons", ${subjectData})'><div class="subject-icon mr-4" style="background-color: ${subject.color || '#3B82F6'}"><i class="fas ${subject.icon || 'fa-book'}"></i></div><div class="flex-grow"><h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">${subject.name}</h3><p class="text-sm text-gray-500 dark:text-gray-400">${subject.chapterCount || '0'} Chapters</p></div><i class="fas fa-chevron-right text-gray-400"></i></div>`;
             }).join('');
         } else {
             listEl.innerHTML = `<p class="text-center text-gray-500">No subjects found.</p>`;
         }
     });
 }
-function fetchLessons(subjectId) {
+function fetchLessons(data) {
+    const { subjectId, subjectName, subjectColor } = data;
     const listEl = document.getElementById('lessons-list');
     const path = `lessons/${studentData.class}/${studentData.medium}/${subjectId}`;
     database.ref(path).orderByChild('title').once('value', snapshot => {
@@ -153,25 +169,99 @@ function fetchLessons(subjectId) {
             const lessons = snapshot.val();
             listEl.innerHTML = Object.keys(lessons).map((id, index) => {
                 const lesson = lessons[id];
-                return `<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 cursor-pointer hover:shadow-md transition-shadow" onclick="showPage('lesson', { lessonId: '${id}', subjectId: '${subjectId}', lessonTitle: '${lesson.title}', subjectName: document.querySelector('h2').textContent })"><div class="flex justify-between items-center"><h3 class="text-md font-semibold text-gray-700 dark:text-gray-200">${index+1}. ${lesson.title}</h3><div class="flex items-center">${lesson.isPaid ? '<span class="text-xs font-bold text-white bg-orange-500 px-2 py-1 rounded-full mr-3">PREMIUM</span>' : ''}<i class="fas fa-arrow-right text-blue-500"></i></div></div></div>`;
+                // FIX: Pass all required data to the lesson page safely using JSON.stringify
+                const lessonData = JSON.stringify({ lessonId: id, subjectId, lessonTitle: lesson.title, subjectName, subjectColor });
+                return `<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 cursor-pointer hover:shadow-md transition-shadow" onclick='showPage("lesson", ${lessonData})'><div class="flex justify-between items-center"><h3 class="text-md font-semibold text-gray-700 dark:text-gray-200">${index+1}. ${lesson.title}</h3><div class="flex items-center">${lesson.isPaid ? '<span class="text-xs font-bold text-white bg-orange-500 px-2 py-1 rounded-full mr-3">PREMIUM</span>' : ''}<i class="fas fa-arrow-right text-blue-500"></i></div></div></div>`;
             }).join('');
         } else {
             listEl.innerHTML = `<p class="text-center text-gray-500">No lessons found.</p>`;
         }
     });
 }
-function fetchLessonDetail(lessonId, subjectId) {
+function fetchLessonDetail(data) {
+    const { lessonId, subjectId, subjectName, subjectColor } = data;
     const contentEl = document.getElementById('main-content');
     const path = `lessons/${studentData.class}/${studentData.medium}/${subjectId}/${lessonId}`;
+
     database.ref(path).once('value', snapshot => {
         if (snapshot.exists()) {
             const lesson = snapshot.val();
-            saveRecentLesson(lessonId, subjectId, lesson.title); // Save for home screen
+            saveRecentLesson(lessonId, subjectId, lesson.title);
+
             const isLocked = lesson.isPaid && !studentData.isPaid;
-            contentEl.innerHTML = `<div>...</div>`; // Render logic remains similar
-            // Lesson detail rendering logic (omitted for brevity, no major changes from previous)
-            contentEl.innerHTML = `<div><div class="flex items-center mb-4"><button onclick="showPage('lessons', {subjectId: '${subjectId}', subjectName: 'Lessons'})" class="text-blue-500 hover:text-blue-700 p-2"><i class="fas fa-arrow-left text-xl"></i></button><h2 class="text-2xl font-bold ml-2 text-gray-800 dark:text-gray-100">${lesson.title}</h2></div><div class="flex space-x-2 mb-4"><button id="read-btn" class="flex-1 gradient-primary text-white font-bold py-3 px-4 rounded-lg shadow-sm">Read</button><button id="qna-btn" class="flex-1 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 text-gray-800 dark:text-gray-200 font-bold py-3 px-4 rounded-lg">Q&A</button></div><div id="lesson-content-area" class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow-inner prose max-w-none dark:prose-invert"></div></div>`;
-            const r=document.getElementById("read-btn"),q=document.getElementById("qna-btn"),a=document.getElementById("lesson-content-area"),s=e=>{[r,q].forEach(t=>{t.classList.remove("gradient-primary","text-white"),t.classList.add("bg-gray-200","dark:bg-slate-700","hover:bg-gray-300","text-gray-800","dark:text-gray-200")}),e.classList.add("gradient-primary","text-white"),e.classList.remove("bg-gray-200","dark:bg-slate-700","hover:bg-gray-300","text-gray-800","dark:text-gray-200")},t=()=>{s(r),a.innerHTML=isLocked?`<div class="prose max-w-none dark:prose-invert">${lesson.freeContent||"This is a preview."}</div><div class="mt-6 p-4 bg-blue-50 dark:bg-slate-700 border-l-4 border-blue-500 rounded-r-lg text-center"><p class="font-bold text-blue-800 dark:text-blue-300">This is a premium lesson!</p><p class="text-blue-700 dark:text-blue-400">Upgrade to view full content.</p></div>`:`<div class="prose max-w-none dark:prose-invert">${lesson.fullContent||"No content."}</div>`},n=()=>{s(q),a.innerHTML=lesson.qna&&lesson.qna.length>0?lesson.qna.map(e=>`<div class="border dark:border-slate-700 rounded-lg mb-2"><div class="p-3 font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)"><span>${e.question}</span><i class="fas fa-chevron-down transition-transform"></i></div><div class="qna-answer hidden p-3 border-t dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-700 dark:text-gray-300">${e.answer}</div></div>`).join(""):'<p class="text-center text-gray-500">No Q&A available.</p>'};r.addEventListener("click",t),q.addEventListener("click",n),t()
+            // FIX: Safely stringify data for the back button
+            const backButtonData = JSON.stringify({ subjectId, subjectName, subjectColor });
+
+            // Set main structure
+            contentEl.innerHTML = `
+                <div>
+                    <div class="flex items-center mb-4">
+                        <button onclick='showPage("lessons", ${backButtonData})' class="text-blue-500 hover:text-blue-700 p-2">
+                            <i class="fas fa-arrow-left text-xl"></i>
+                        </button>
+                        <h2 class="text-2xl font-bold ml-2 text-gray-800 dark:text-gray-100">${lesson.title}</h2>
+                    </div>
+                    <div class="flex space-x-2 mb-4">
+                        <button id="read-btn" class="flex-1 font-bold py-3 px-4 rounded-lg shadow-sm">Read</button>
+                        <button id="qna-btn" class="flex-1 font-bold py-3 px-4 rounded-lg">Q&A</button>
+                    </div>
+                    <div id="lesson-content-area" class="bg-white dark:bg-slate-800 p-5 rounded-lg shadow-inner prose max-w-none dark:prose-invert"></div>
+                </div>`;
+
+            // --- START: Unminified and corrected logic for Read/Q&A tabs ---
+            const readBtn = document.getElementById("read-btn");
+            const qnaBtn = document.getElementById("qna-btn");
+            const lessonContentArea = document.getElementById("lesson-content-area");
+
+            const setActiveTab = (activeBtn) => {
+                [readBtn, qnaBtn].forEach(btn => {
+                    btn.classList.remove("gradient-primary", "text-white");
+                    btn.classList.add("bg-gray-200", "dark:bg-slate-700", "hover:bg-gray-300", "text-gray-800", "dark:text-gray-200");
+                });
+                activeBtn.classList.add("gradient-primary", "text-white");
+                activeBtn.classList.remove("bg-gray-200", "dark:bg-slate-700", "hover:bg-gray-300", "text-gray-800", "dark:text-gray-200");
+            };
+
+            const showReadContent = () => {
+                setActiveTab(readBtn);
+                let contentHTML = isLocked
+                    ? `<div class="prose max-w-none dark:prose-invert">${lesson.freeContent || "This is a preview."}</div><div class="mt-6 p-4 bg-blue-50 dark:bg-slate-700 border-l-4 border-blue-500 rounded-r-lg text-center"><p class="font-bold text-blue-800 dark:text-blue-300">This is a premium lesson!</p><p class="text-blue-700 dark:text-blue-400">Upgrade to view full content.</p></div>`
+                    : `<div class="prose max-w-none dark:prose-invert">${lesson.fullContent || "No content available."}</div>`;
+                lessonContentArea.innerHTML = contentHTML.replace(/\n/g, '<br>');
+            };
+
+            const showQnaContent = () => {
+                setActiveTab(qnaBtn);
+                lessonContentArea.innerHTML = (lesson.qna && Array.isArray(lesson.qna) && lesson.qna.length > 0)
+                    ? lesson.qna.map(item =>
+                        `<div class="border dark:border-slate-700 rounded-lg mb-2">
+                            <div class="p-3 font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                                <span>${item.question}</span>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                            <div class="qna-answer hidden p-3 border-t dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-700 dark:text-gray-300">${item.answer}</div>
+                        </div>`
+                    ).join("")
+                    : '<p class="text-center text-gray-500">No Q&A available for this lesson.</p>';
+            };
+
+            readBtn.addEventListener("click", showReadContent);
+            qnaBtn.addEventListener("click", showQnaContent);
+
+            // Show the read content by default
+            showReadContent();
+            // --- END: Unminified logic ---
+
+        } else {
+            // FIX: Add an error message if the lesson is not found
+            console.error("Lesson not found at path:", path);
+            contentEl.innerHTML = `
+                <div class="p-4 text-center">
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                    <h2 class="text-xl font-bold text-red-500">Error Loading Lesson</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Could not find the lesson data. It might have been moved or deleted.</p>
+                    <button onclick="showPage('subjects')" class="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">Go Back to Subjects</button>
+                </div>`;
         }
     });
 }
@@ -191,7 +281,9 @@ function renderContinueLearning() {
     if (recents.length > 0) {
         let html = `<h3 class="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Continue Learning</h3><div class="space-y-3">`;
         recents.forEach(item => {
-            html += `<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center justify-between cursor-pointer" onclick="showPage('lesson', { lessonId: '${item.lessonId}', subjectId: '${item.subjectId}'})"><div><p class="font-semibold text-gray-700 dark:text-gray-200">${item.lessonTitle}</p><p class="text-sm text-gray-500 dark:text-gray-400">Tap to resume</p></div><i class="fas fa-play-circle text-2xl text-blue-500"></i></div>`;
+             // FIX: Need to fetch subject details to pass to the lesson page again
+            const lessonData = JSON.stringify({ lessonId: item.lessonId, subjectId: item.subjectId });
+            html += `<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center justify-between cursor-pointer" onclick='showPage("lesson", ${lessonData})'><div><p class="font-semibold text-gray-700 dark:text-gray-200">${item.lessonTitle}</p><p class="text-sm text-gray-500 dark:text-gray-400">Tap to resume</p></div><i class="fas fa-play-circle text-2xl text-blue-500"></i></div>`;
         });
         html += `</div>`;
         container.innerHTML = html;
@@ -208,7 +300,7 @@ function showModal(type) {
             html = `<h3 class="font-bold text-xl mb-4 text-center">Select Theme</h3><div class="flex justify-around"><button onclick="setTheme('light')" class="text-center p-4 rounded-lg border-2 border-gray-200 dark:border-slate-600"><i class="fas fa-sun text-4xl text-yellow-500"></i><p class="mt-2 font-semibold">Light</p></button><button onclick="setTheme('dark')" class="text-center p-4 rounded-lg border-2 border-gray-200 dark:border-slate-600"><i class="fas fa-moon text-4xl text-indigo-500"></i><p class="mt-2 font-semibold">Dark</p></button></div>`;
             break;
         case 'share':
-            html = `<h3 class="font-bold text-xl mb-4 text-center">Share the App</h3><p class="text-center text-gray-600 dark:text-gray-300 mb-4">Share this app with your friends!</p><div class="flex items-center border rounded-lg p-2 bg-gray-100 dark:bg-slate-700"><input type="text" value="https://learnapp.example.com" class="bg-transparent border-0 flex-1" readonly><button class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-semibold">Copy</button></div>`;
+            html = `<h3 class="font-bold text-xl mb-4 text-center">Share the App</h3><p class="text-center text-gray-600 dark:text-gray-300 mb-4">Share this app with your friends!</p><div class="flex items-center border rounded-lg p-2 bg-gray-100 dark:bg-slate-700"><input type="text" value="${window.location.href}" class="bg-transparent border-0 flex-1" readonly><button onclick="navigator.clipboard.writeText(window.location.href)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-semibold">Copy</button></div>`;
             break;
         case 'rate':
              html = `<h3 class="font-bold text-xl mb-4 text-center">Rate Us</h3><p class="text-center text-gray-600 dark:text-gray-300 mb-4">If you enjoy the app, please rate us!</p><div class="flex justify-center text-3xl text-yellow-400 space-x-2"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div>`;
